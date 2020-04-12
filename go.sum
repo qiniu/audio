@@ -7,6 +7,8 @@ github.com/hajimehoshi/oto v0.5.4/go.mod h1:0QXGEkbuJRohbJaxr7ZQSxnju7hEhseiPx2h
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/qiniu/x v1.8.2 h1:yoDd/Dc/RZ6nWRNT3V7FF6P6QlzcSQwfizzx3YjONuY=
 github.com/qiniu/x v1.8.2/go.mod h1:aU6kpH+y42VG99LnEu20KKbvXZY1x7znEJjuR4ErCy0=
+github.com/qiniu/x v1.8.4 h1:B/mGqqShMkP81CwAIAptzsPIxvbza0IYXH3eUwvL66I=
+github.com/qiniu/x v1.8.4/go.mod h1:aU6kpH+y42VG99LnEu20KKbvXZY1x7znEJjuR4ErCy0=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 golang.org/x/exp v0.0.0-20190306152737-a1d7652674e8/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=

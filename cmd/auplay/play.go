@@ -26,7 +26,9 @@ func play(file string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Format: %s\nSampleRate: %d\n", format, d.SampleRate())
+	fmt.Printf(
+		"Format: %s\nSampleRate: %d\nChannels: %d\nBytesPerSample: %d\n",
+		format, d.SampleRate(), d.Channels(), d.BytesPerSample())
 
 	c, err := oto.NewContext(d.SampleRate(), d.Channels(), d.BytesPerSample(), 8192)
 	if err != nil {

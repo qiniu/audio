@@ -80,53 +80,43 @@ func (s *stream) BytesPerSample() int {
 	return s.bytesPerSample
 }
 
-func decode(src io.ReadSeeker) (*stream, error) {
-	buf := make([]byte, 12)
-	n, err := io.ReadFull(src, buf)
-	if n != len(buf) {
-		return nil, fmt.Errorf("wav: invalid header")
+var (
+	errInvalidFormat = fmt.Errorf("wav: invalid header")
+)
+
+func decode(src *bufiox.Reader) (*stream, error) {
+	b := make([]byte, 16)
+	if _, err := src.ReadFull(b[:12]); err != nil {
+		return nil, errInvalidFormat
 	}
-	if err != nil {
-		return nil, err
-	}
-	if !bytes.Equal(buf[0:4], []byte("RIFF")) {
+	if !bytes.Equal(b[0:4], []byte("RIFF")) {
 		return nil, fmt.Errorf("wav: invalid header: 'RIFF' not found")
 	}
-	if !bytes.Equal(buf[8:12], []byte("WAVE")) {
+	if !bytes.Equal(b[8:12], []byte("WAVE")) {
 		return nil, fmt.Errorf("wav: invalid header: 'WAVE' not found")
 	}
 
 	// Read chunks
 	dataSize := int64(0)
-	headerSize := int64(len(buf))
+	headerSize := int64(len(b))
 	sampleRate := int64(0)
 	channelNum := 0
 	bitsPerSample := 0
 chunks:
 	for {
-		buf := make([]byte, 8)
-		n, err := io.ReadFull(src, buf)
-		if n != len(buf) {
-			return nil, fmt.Errorf("wav: invalid header")
-		}
-		if err != nil {
-			return nil, err
+		if _, err := src.ReadFull(b[:8]); err != nil {
+			return nil, errInvalidFormat
 		}
 		headerSize += 8
-		size := int64(buf[4]) | int64(buf[5])<<8 | int64(buf[6])<<16 | int64(buf[7])<<24
+		size := int64(b[4]) | int64(b[5])<<8 | int64(b[6])<<16 | int64(b[7])<<24
 		switch {
-		case bytes.Equal(buf[0:4], []byte("fmt ")):
-			// Size of 'fmt' header is usually 16, but can be more than 16.
-			if size < 16 {
-				return nil, fmt.Errorf("wav: invalid header: maybe non-PCM file?")
+		case bytes.Equal(b[0:4], []byte("fmt ")):
+			if size < 16 { // Size of 'fmt' header is usually 16, but can be more than 16.
+				return nil, errInvalidFormat
 			}
-			buf := make([]byte, size)
-			n, err := io.ReadFull(src, buf)
-			if n != len(buf) {
-				return nil, fmt.Errorf("wav: invalid header")
-			}
+			buf, err := src.Peek(int(size))
 			if err != nil {
-				return nil, err
+				return nil, errInvalidFormat
 			}
 			format := int(buf[0]) | int(buf[1])<<8
 			if format != 1 {
@@ -143,17 +133,13 @@ chunks:
 				return nil, fmt.Errorf("wav: bits per sample must be 8 or 16 but was %d", bitsPerSample)
 			}
 			sampleRate = int64(buf[4]) | int64(buf[5])<<8 | int64(buf[6])<<16 | int64(buf[7])<<24
+			src.Discard(int(size))
 			headerSize += size
-		case bytes.Equal(buf[0:4], []byte("data")):
+		case bytes.Equal(b[0:4], []byte("data")):
 			dataSize = size
 			break chunks
 		default:
-			buf := make([]byte, size)
-			n, err := io.ReadFull(src, buf)
-			if n != len(buf) {
-				return nil, fmt.Errorf("wav: invalid header")
-			}
-			if err != nil {
+			if _, err := src.Discard(int(size)); err != nil {
 				return nil, err
 			}
 			headerSize += size
