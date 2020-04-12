@@ -21,6 +21,14 @@ type Decoded interface {
 	// SampleRate returns the sample rate like 44100.
 	SampleRate() int
 
+	// Channels returns the number of channels. One channel is mono playback.
+	// Two channels are stereo playback. No other values are supported.
+	Channels() int
+
+	// BytesPerSample returns the number of bytes per sample per channel.
+	// The usual value is 2. Only values 1 and 2 are supported.
+	BytesPerSample() int
+
 	// Length returns the total size in bytes. It returns -1 when the total size is not
 	// available. e.g. when the given source is not io.Seeker.
 	Length() int64

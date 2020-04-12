@@ -11,11 +11,27 @@ import (
 
 // -------------------------------------------------------------------------------------
 
+type decoded struct {
+	mp3.Decoder
+}
+
+// Channels returns the number of channels. One channel is mono playback.
+// Two channels are stereo playback. No other values are supported.
+func (p *decoded) Channels() int {
+	return 2
+}
+
+// BytesPerSample returns the number of bytes per sample per channel.
+// The usual value is 2. Only values 1 and 2 are supported.
+func (p *decoded) BytesPerSample() int {
+	return 2
+}
+
 // Decode decodes a mp3 audio.
 func Decode(r io.ReadSeeker) (audio.Decoded, error) {
 	b := bufiox.NewReader(r)
 	dec, err := mp3.NewDecoder(b)
-	return dec, err
+	return &decoded{Decoder: *dec}, err
 }
 
 // DecodeConfig is not implemented.
