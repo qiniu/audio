@@ -14,8 +14,8 @@ var ErrFormat = errors.New("audio: unknown format")
 
 // -------------------------------------------------------------------------------------
 
-// Decoder represents an audio decoder.
-type Decoder interface {
+// DecodedAudio represents a decoded audio.
+type DecodedAudio interface {
 	io.ReadSeeker
 
 	// SampleRate returns the sample rate like 44100.
@@ -32,7 +32,7 @@ type Config struct {
 }
 
 // DecodeFunc prototype.
-type DecodeFunc = func(io.ReadSeeker) (Decoder, error)
+type DecodeFunc = func(io.ReadSeeker) (DecodedAudio, error)
 
 // DecodeConfigFunc prototype.
 type DecodeConfigFunc = func(io.ReadSeeker) (Config, error)
@@ -110,7 +110,7 @@ func sniff(r reader) format {
 // The string returned is the format name used during format registration.
 // Format registration is typically done by an init function in the codec-
 // specific package.
-func Decode(r io.ReadSeeker) (Decoder, string, error) {
+func Decode(r io.ReadSeeker) (DecodedAudio, string, error) {
 	rr := asReader(r)
 	f := sniff(rr)
 	if f.decode == nil {
