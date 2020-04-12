@@ -4,13 +4,63 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"sync"
+	"sync/atomic"
 
 	"github.com/qiniu/audio"
 	"github.com/qiniu/x/bufiox"
 )
 
+// -------------------------------------------------------------------------------------
+
+// Config type.
+type Config struct {
+	Format        int
+	SampleRate    int
+	DataSize      int64
+	HeaderSize    int64
+	Channels      int
+	BitsPerSample int
+	BlockAlign    int
+}
+
+// DecodeFunc prototype.
+type DecodeFunc = func(r *bufiox.Reader, cfg *Config) (audio.Decoded, error)
+
+// A format holds an audio format's name, magic header and how to decode it.
+type format struct {
+	tag    int
+	decode DecodeFunc
+}
+
+// Formats is the list of registered formats.
+var (
+	formatsMu     sync.Mutex
+	atomicFormats atomic.Value
+)
+
+// RegisterFormat registers a wav decoder extension.
+func RegisterFormat(tag int, decode DecodeFunc) {
+	formatsMu.Lock()
+	formats, _ := atomicFormats.Load().([]format)
+	atomicFormats.Store(append(formats, format{tag, decode}))
+	formatsMu.Unlock()
+}
+
+func decodeEx(r *bufiox.Reader, cfg *Config) (audio.Decoded, error) {
+	formats, _ := atomicFormats.Load().([]format)
+	for _, f := range formats {
+		if f.tag == cfg.Format {
+			return f.decode(r, cfg)
+		}
+	}
+	return nil, audio.ErrFormat
+}
+
+// -------------------------------------------------------------------------------------
+
 type stream struct {
-	src            io.ReadSeeker
+	src            *bufiox.Reader
 	headerSize     int64
 	dataSize       int64
 	remaining      int64
@@ -84,7 +134,7 @@ var (
 	errInvalidFormat = fmt.Errorf("wav: invalid header")
 )
 
-func decode(src *bufiox.Reader) (*stream, error) {
+func decode(src *bufiox.Reader) (audio.Decoded, error) {
 	b := make([]byte, 16)
 	if _, err := src.ReadFull(b[:12]); err != nil {
 		return nil, errInvalidFormat
@@ -97,17 +147,13 @@ func decode(src *bufiox.Reader) (*stream, error) {
 	}
 
 	// Read chunks
-	dataSize := int64(0)
-	headerSize := int64(len(b))
-	sampleRate := int64(0)
-	channelNum := 0
-	bitsPerSample := 0
+	cfg := Config{HeaderSize: int64(len(b))}
 chunks:
 	for {
 		if _, err := src.ReadFull(b[:8]); err != nil {
 			return nil, errInvalidFormat
 		}
-		headerSize += 8
+		cfg.HeaderSize += 8
 		size := int64(b[4]) | int64(b[5])<<8 | int64(b[6])<<16 | int64(b[7])<<24
 		switch {
 		case bytes.Equal(b[0:4], []byte("fmt ")):
@@ -118,41 +164,41 @@ chunks:
 			if err != nil {
 				return nil, errInvalidFormat
 			}
-			format := int(buf[0]) | int(buf[1])<<8
-			if format != 1 {
-				return nil, fmt.Errorf("wav: format must be linear PCM")
-			}
-			channelNum = int(buf[2]) | int(buf[3])<<8
-			switch channelNum {
+			cfg.Format = int(buf[0]) | int(buf[1])<<8
+			cfg.Channels = int(buf[2]) | int(buf[3])<<8
+			switch cfg.Channels {
 			case 1, 2:
 			default:
-				return nil, fmt.Errorf("wav: channel num must be 1 or 2 but was %d", channelNum)
+				return nil, fmt.Errorf("wav: channel num must be 1 or 2 but was %d", cfg.Channels)
 			}
-			bitsPerSample = int(buf[14]) | int(buf[15])<<8
-			if bitsPerSample != 8 && bitsPerSample != 16 {
-				return nil, fmt.Errorf("wav: bits per sample must be 8 or 16 but was %d", bitsPerSample)
-			}
-			sampleRate = int64(buf[4]) | int64(buf[5])<<8 | int64(buf[6])<<16 | int64(buf[7])<<24
+			cfg.BitsPerSample = int(buf[14]) | int(buf[15])<<8
+			cfg.SampleRate = int(buf[4]) | int(buf[5])<<8 | int(buf[6])<<16 | int(buf[7])<<24
 			src.Discard(int(size))
-			headerSize += size
+			cfg.HeaderSize += size
 		case bytes.Equal(b[0:4], []byte("data")):
-			dataSize = size
+			cfg.DataSize = size
 			break chunks
 		default:
 			if _, err := src.Discard(int(size)); err != nil {
 				return nil, err
 			}
-			headerSize += size
+			cfg.HeaderSize += size
 		}
+	}
+	if cfg.Format != 1 {
+		return decodeEx(src, &cfg)
+	}
+	if cfg.BitsPerSample != 8 && cfg.BitsPerSample != 16 {
+		return nil, fmt.Errorf("wav: bits per sample must be 8 or 16 but was %d", cfg.BitsPerSample)
 	}
 	s := &stream{
 		src:            src,
-		headerSize:     headerSize,
-		dataSize:       dataSize,
-		remaining:      dataSize,
-		sampleRate:     int(sampleRate),
-		channelNum:     channelNum,
-		bytesPerSample: bitsPerSample >> 3,
+		headerSize:     cfg.HeaderSize,
+		dataSize:       cfg.DataSize,
+		remaining:      cfg.DataSize,
+		sampleRate:     int(cfg.SampleRate),
+		channelNum:     cfg.Channels,
+		bytesPerSample: cfg.BitsPerSample >> 3,
 	}
 	return s, nil
 }
@@ -162,8 +208,7 @@ chunks:
 // Decode decodes a wav audio.
 func Decode(r io.ReadSeeker) (audio.Decoded, error) {
 	b := bufiox.NewReader(r)
-	dec, err := decode(b)
-	return dec, err
+	return decode(b)
 }
 
 // DecodeConfig is not implemented.
