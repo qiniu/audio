@@ -10,7 +10,7 @@ import (
 
 // -------------------------------------------------------------------------------------
 
-func decode(r io.ReadSeeker) (audio.DecodedAudio, error) {
+func decode(r io.ReadSeeker) (audio.Decoded, error) {
 	dec, err := mp3.NewDecoder(r)
 	return dec, err
 }
