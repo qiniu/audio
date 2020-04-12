@@ -10,6 +10,7 @@ import (
 
 	"github.com/qiniu/audio"
 	_ "github.com/qiniu/audio/mp3"
+	_ "github.com/qiniu/audio/wav"
 )
 
 // -------------------------------------------------------------------------------------

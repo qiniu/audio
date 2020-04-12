@@ -65,11 +65,11 @@ var (
 // Magic is the magic prefix that identifies the format's encoding. The magic
 // string can contain "?" wildcards that each match any one byte.
 // Decode is the function that decodes the encoded audio.
-// DecodeConfig is the function that decodes just its configuration.
-func RegisterFormat(name, magic string, decode DecodeFunc, decodeConfig DecodeConfigFunc) {
+// decodeCfg is the function that decodes just its configuration.
+func RegisterFormat(name, magic string, decode DecodeFunc, decodeCfg DecodeConfigFunc) {
 	formatsMu.Lock()
 	formats, _ := atomicFormats.Load().([]format)
-	atomicFormats.Store(append(formats, format{name, magic, decode, decodeConfig}))
+	atomicFormats.Store(append(formats, format{name, magic, decode, decodeCfg}))
 	formatsMu.Unlock()
 }
 
