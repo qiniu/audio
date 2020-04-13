@@ -69,7 +69,6 @@ type stream struct {
 	sampleRate     int
 }
 
-// Read is implementation of io.Reader's Read.
 func (s *stream) Read(p []byte) (int, error) {
 	if s.remaining <= 0 {
 		return 0, io.EOF
@@ -82,7 +81,6 @@ func (s *stream) Read(p []byte) (int, error) {
 	return n, err
 }
 
-// Seek is implementation of io.Seeker's Seek.
 func (s *stream) Seek(offset int64, whence int) (int64, error) {
 	switch whence {
 	case io.SeekStart:
