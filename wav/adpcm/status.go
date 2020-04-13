@@ -23,13 +23,12 @@ type status struct {
 	index  int
 }
 
-func decodeSample(scode byte, s status) (int16, status) {
+func (s *status) decodeSample(scode byte) int {
 	// 将 scode 分离为数据和符号
-	sign := scode & 8
 	code := int(scode & 7)
-	delta := (stepTable[s.index] * code >> 2) + (stepTable[s.index] >> 3) // 后面加的一项是为了减少误差
-	if sign != 0 {
-		delta = -delta
+	delta := ((stepTable[s.index] * code) >> 2) + (stepTable[s.index] >> 3) // 后面加的一项是为了减少误差
+	if (scode & 8) != 0 {
+		delta = -delta // 负数
 	}
 	s.sample += delta // 计算出当前的波形数据
 	s.index += indexAdjust[code]
@@ -39,12 +38,47 @@ func decodeSample(scode byte, s status) (int16, status) {
 		s.index = 88
 	}
 	if s.sample > 32767 {
-		return 32767, s
+		return 32767
 	}
 	if s.sample < -32768 {
-		return -32768, s
+		return -32768
 	}
-	return int16(s.sample), s
+	return s.sample
+}
+
+func (s *status) saveSample(samples []byte, idx int, scode byte) int {
+	sample := s.decodeSample(scode)
+	return saveSample(samples, idx, sample)
+}
+
+func saveSample(samples []byte, idx int, sample int) int {
+	samples[idx] = byte(sample)
+	samples[idx+1] = byte(sample >> 8)
+	return idx + 2
+}
+
+// -------------------------------------------------------------------------------------
+
+func loadStatus(b []byte) *status {
+	return &status{
+		sample: int(int16(b[0]) | (int16(b[1]) << 8)),
+		index:  int(b[2]),
+	}
+}
+
+func loadBlock(channels int, block []byte, samples []byte) {
+	status1 := loadStatus(block)
+	status2 := status1
+	saveSample(samples, 0, status1.sample)
+	if channels > 1 {
+		status2 = loadStatus(block[4:])
+		saveSample(samples, 2, status2.sample)
+	}
+	idx := channels << 1
+	for _, code := range block[(channels << 2):] {
+		idx = status1.saveSample(samples, idx, code>>4)
+		idx = status2.saveSample(samples, idx, code&0xf)
+	}
 }
 
 // -------------------------------------------------------------------------------------

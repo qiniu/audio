@@ -2,6 +2,7 @@ package wav
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"sync"
@@ -22,6 +23,11 @@ type Config struct {
 	Channels      int
 	BitsPerSample int
 	BlockAlign    int
+}
+
+// SamplesPerBlock returns samples per bloack.
+func (p *Config) SamplesPerBlock() int {
+	return (p.BlockAlign << 1) - p.Channels*7
 }
 
 // DecodeFunc prototype.
@@ -70,10 +76,10 @@ type stream struct {
 }
 
 func (s *stream) Read(p []byte) (int, error) {
-	if s.remaining <= 0 {
-		return 0, io.EOF
-	}
 	if s.remaining < int64(len(p)) {
+		if s.remaining <= 0 {
+			return 0, io.EOF
+		}
 		p = p[0:s.remaining]
 	}
 	n, err := s.src.Read(p)
@@ -129,7 +135,9 @@ func (s *stream) BytesPerSample() int {
 }
 
 var (
-	errInvalidFormat = fmt.Errorf("wav: invalid header")
+	errInvalidFormat = errors.New("wav: invalid header")
+	errNotRIFF       = errors.New("wav: invalid header: 'RIFF' not found")
+	errNotWAVE       = errors.New("wav: invalid header: 'WAVE' not found")
 )
 
 func decode(src *bufiox.Reader) (audio.Decoded, error) {
@@ -138,10 +146,10 @@ func decode(src *bufiox.Reader) (audio.Decoded, error) {
 		return nil, errInvalidFormat
 	}
 	if !bytes.Equal(b[0:4], []byte("RIFF")) {
-		return nil, fmt.Errorf("wav: invalid header: 'RIFF' not found")
+		return nil, errNotRIFF
 	}
 	if !bytes.Equal(b[8:12], []byte("WAVE")) {
-		return nil, fmt.Errorf("wav: invalid header: 'WAVE' not found")
+		return nil, errNotWAVE
 	}
 
 	// Read chunks
