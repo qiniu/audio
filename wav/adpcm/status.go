@@ -76,8 +76,8 @@ func loadBlock(channels int, block []byte, samples []byte) {
 	}
 	idx := channels << 1
 	for _, code := range block[(channels << 2):] {
-		idx = status1.saveSample(samples, idx, code>>4)
-		idx = status2.saveSample(samples, idx, code&0xf)
+		idx = status1.saveSample(samples, idx, code&0xf)
+		idx = status2.saveSample(samples, idx, code>>4)
 	}
 }
 
