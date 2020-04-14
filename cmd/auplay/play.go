@@ -49,7 +49,7 @@ func play(file string) error {
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: auplay <AudioFilePath>\n")
+		fmt.Printf("Usage: auplay <AudioFilePath>\n\n")
 		return
 	}
 	if err := play(os.Args[1]); err != nil {
