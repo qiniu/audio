@@ -3,7 +3,11 @@ package convert
 import (
 	"io"
 	"math"
+
+	"github.com/qiniu/audio"
 )
+
+// -------------------------------------------------------------------------------------
 
 var cosTable = [65536]float64{}
 
@@ -232,3 +236,39 @@ func (r *Resampling) Seek(offset int64, whence int) (int64, error) {
 	}
 	return r.pos, nil
 }
+
+// -------------------------------------------------------------------------------------
+
+type resampleDecoded struct {
+	Resampling
+	d audio.Decoded
+}
+
+// SampleRate returns the sample rate like 44100.
+func (p *resampleDecoded) SampleRate() int {
+	return p.to
+}
+
+// Channels returns the number of channels. One channel is mono playback.
+// Two channels are stereo playback. No other values are supported.
+func (p *resampleDecoded) Channels() int {
+	return p.d.Channels()
+}
+
+// BytesPerSample returns the number of bytes per sample per channel.
+// The usual value is 2. Only values 1 and 2 are supported.
+func (p *resampleDecoded) BytesPerSample() int {
+	return p.d.BytesPerSample()
+}
+
+// Resample resamples an audio.
+func Resample(d audio.Decoded, sampleRate int) audio.Decoded {
+	sampleRateFrom := d.SampleRate()
+	if sampleRateFrom == sampleRate {
+		return d
+	}
+	s := NewResampling(d, d.Length(), sampleRateFrom, sampleRate)
+	return &resampleDecoded{*s, d}
+}
+
+// -------------------------------------------------------------------------------------

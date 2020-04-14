@@ -3,8 +3,11 @@ package convert
 import (
 	"io"
 
+	"github.com/qiniu/audio"
 	"github.com/qiniu/x/bufiox"
 )
+
+// -------------------------------------------------------------------------------------
 
 // Stereo16 class.
 type Stereo16 struct {
@@ -84,3 +87,42 @@ func (s *Stereo16) Seek(offset int64, whence int) (int64, error) {
 	}
 	return s.source.Seek(offset, whence)
 }
+
+// -------------------------------------------------------------------------------------
+
+type stereo16Decoded struct {
+	Stereo16
+	d audio.Decoded
+}
+
+// ToStereo16 convert an audio into stereo16.
+func ToStereo16(d audio.Decoded) audio.Decoded {
+	s := NewStereo16(d, d.Channels() == 1, d.BytesPerSample() == 1)
+	return &stereo16Decoded{*s, d}
+}
+
+// SampleRate returns the sample rate like 44100.
+func (p *stereo16Decoded) SampleRate() int {
+	return p.d.SampleRate()
+}
+
+// Channels returns the number of channels. One channel is mono playback.
+// Two channels are stereo playback. No other values are supported.
+func (p *stereo16Decoded) Channels() int {
+	return 2
+}
+
+// BytesPerSample returns the number of bytes per sample per channel.
+// The usual value is 2. Only values 1 and 2 are supported.
+func (p *stereo16Decoded) BytesPerSample() int {
+	return 2
+}
+
+// Length returns the total size in bytes. It returns -1 when the total size is not
+// available. e.g. when the given source is not io.Seeker.
+func (p *stereo16Decoded) Length() int64 {
+	d := p.d
+	return (d.Length() << 2) / int64(d.Channels()*d.BytesPerSample())
+}
+
+// -------------------------------------------------------------------------------------
