@@ -97,8 +97,13 @@ type stereo16Decoded struct {
 
 // ToStereo16 convert an audio into stereo16.
 func ToStereo16(d audio.Decoded) audio.Decoded {
-	s := NewStereo16(d, d.Channels() == 1, d.BytesPerSample() == 1)
-	return &stereo16Decoded{*s, d}
+	mono := (d.Channels() == 1)
+	eight := (d.BytesPerSample() == 1)
+	if mono || eight {
+		s := NewStereo16(d, mono, eight)
+		return &stereo16Decoded{*s, d}
+	}
+	return d
 }
 
 // SampleRate returns the sample rate like 44100.
