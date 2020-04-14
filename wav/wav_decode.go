@@ -25,7 +25,7 @@ type Config struct {
 	BlockAlign    int
 }
 
-// SamplesPerBlock returns samples per bloack.
+// SamplesPerBlock returns samples per block.
 func (p *Config) SamplesPerBlock() int {
 	return (p.BlockAlign << 1) - p.Channels*7
 }
@@ -177,6 +177,7 @@ chunks:
 			default:
 				return nil, fmt.Errorf("wav: channel num must be 1 or 2 but was %d", cfg.Channels)
 			}
+			cfg.BlockAlign = int(buf[12]) | int(buf[13])<<8
 			cfg.BitsPerSample = int(buf[14]) | int(buf[15])<<8
 			cfg.SampleRate = int(buf[4]) | int(buf[5])<<8 | int(buf[6])<<16 | int(buf[7])<<24
 			src.Discard(int(size))
