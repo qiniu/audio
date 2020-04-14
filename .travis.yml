@@ -3,5 +3,6 @@ go:
   - "1.13"
   - "1.14"
 install:
+  - apt install libasound2-dev
   - go install -v ./...
   - go test ./...
