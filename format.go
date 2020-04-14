@@ -61,7 +61,7 @@ var (
 )
 
 // RegisterFormat registers an audio format for use by Decode.
-// Name is the name of the format, like "mp3" or "riff".
+// Name is the name of the format, like "mp3" or "wav".
 // Magic is the magic prefix that identifies the format's encoding. The magic
 // string can contain "?" wildcards that each match any one byte.
 // Decode is the function that decodes the encoded audio.

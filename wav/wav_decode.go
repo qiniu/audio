@@ -16,7 +16,7 @@ import (
 
 // Config type.
 type Config struct {
-	Format        int
+	Format        int // Format Tag
 	SampleRate    int
 	DataSize      int64
 	HeaderSize    int64
