@@ -7,3 +7,8 @@ require (
 	github.com/hajimehoshi/oto v0.5.4
 	github.com/qiniu/x v1.8.4
 )
+
+replace (
+	github.com/hajimehoshi/oto v0.3.4 => github.com/qiniu/oto v0.5.4-fixed
+	github.com/hajimehoshi/oto v0.5.4 => github.com/qiniu/oto v0.5.4-fixed
+)

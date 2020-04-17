@@ -1,12 +1,9 @@
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/hajimehoshi/go-mp3 v0.2.1 h1:DH4ns3cPv39n3cs8MPcAlWqPeAwLCK8iNgqvg0QBWI8=
 github.com/hajimehoshi/go-mp3 v0.2.1/go.mod h1:Rr+2P46iH6PwTPVgSsEwBkon0CK5DxCAeX/Rp65DCTE=
-github.com/hajimehoshi/oto v0.3.4/go.mod h1:PgjqsBJff0efqL2nlMJidJgVJywLn6M4y8PI4TfeWfA=
-github.com/hajimehoshi/oto v0.5.4 h1:Dn+WcYeF310xqStKm0tnvoruYUV5Sce8+sfUaIvWGkE=
-github.com/hajimehoshi/oto v0.5.4/go.mod h1:0QXGEkbuJRohbJaxr7ZQSxnju7hEhseiPx2hrh6raOI=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/qiniu/x v1.8.2 h1:yoDd/Dc/RZ6nWRNT3V7FF6P6QlzcSQwfizzx3YjONuY=
-github.com/qiniu/x v1.8.2/go.mod h1:aU6kpH+y42VG99LnEu20KKbvXZY1x7znEJjuR4ErCy0=
+github.com/qiniu/oto v0.5.4-fixed h1:AoULOOpeSB1eFiCXyz8ShXeJzSGx3Tb2yQqIqjWNn2Q=
+github.com/qiniu/oto v0.5.4-fixed/go.mod h1:0QXGEkbuJRohbJaxr7ZQSxnju7hEhseiPx2hrh6raOI=
 github.com/qiniu/x v1.8.4 h1:B/mGqqShMkP81CwAIAptzsPIxvbza0IYXH3eUwvL66I=
 github.com/qiniu/x v1.8.4/go.mod h1:aU6kpH+y42VG99LnEu20KKbvXZY1x7znEJjuR4ErCy0=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

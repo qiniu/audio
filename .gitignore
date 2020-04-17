@@ -1,5 +1,7 @@
 *.mp3
 *.wav
+*.js
+*.js.map
 .DS_Store
 
 # Binaries for programs and plugins
