@@ -6,6 +6,8 @@ github.com/qiniu/oto v0.5.4-fixed h1:AoULOOpeSB1eFiCXyz8ShXeJzSGx3Tb2yQqIqjWNn2Q
 github.com/qiniu/oto v0.5.4-fixed/go.mod h1:0QXGEkbuJRohbJaxr7ZQSxnju7hEhseiPx2hrh6raOI=
 github.com/qiniu/x v1.8.4 h1:B/mGqqShMkP81CwAIAptzsPIxvbza0IYXH3eUwvL66I=
 github.com/qiniu/x v1.8.4/go.mod h1:aU6kpH+y42VG99LnEu20KKbvXZY1x7znEJjuR4ErCy0=
+github.com/qiniu/x v1.10.5 h1:7V/CYWEmo9axJULvrJN6sMYh2FdY+esN5h8jwDkA4b0=
+github.com/qiniu/x v1.10.5/go.mod h1:03Ni9tj+N2h2aKnAz+6N0Xfl8FwMEDRC2PAlxekASDs=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 golang.org/x/exp v0.0.0-20190306152737-a1d7652674e8/go.mod h1:CJ0aWSM057203Lf6IL+f9T1iT9GByDxfZKAQTCR3kQA=
