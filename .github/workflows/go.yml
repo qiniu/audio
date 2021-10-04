@@ -18,6 +18,10 @@ jobs:
       with:
         go-version: 1.17
 
+    - name: Get dependencies
+      run: sudo apt-get update && sudo apt-get install libasound2-dev
+      if: ${{ runner.os == 'Linux' }}
+
     - name: Build
       run: go build -v ./...
 
