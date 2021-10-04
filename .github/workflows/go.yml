@@ -25,5 +25,13 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Test
-      run: go test -v ./...
+    - name: Go Test
+      run: go test -v -coverprofile=coverage.txt -covermode=atomic ./...
+
+    - name: Upload coverage report
+      uses: codecov/codecov-action@v1.0.2
+      with:
+        token: 4a4ba14f-7546-4000-9113-7b67b111ebd6
+        file: ./coverage.txt
+        flags: unittests
+        name: codecov-qiniu-audio
