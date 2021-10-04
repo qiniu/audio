@@ -1,7 +1,7 @@
 # Audio support for Go language
 
 [![LICENSE](https://img.shields.io/github/license/qiniu/audio.svg)](https://github.com/qiniu/audio/blob/master/LICENSE)
-[![Build Status](https://travis-ci.org/qiniu/audio.png?branch=master)](https://travis-ci.org/qiniu/audio)
+[![Build Status](https://github.com/qiniu/audio/actions/workflows/go.yml/badge.svg)](https://github.com/qiniu/audio/actions/workflows/go.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/qiniu/audio)](https://goreportcard.com/report/github.com/qiniu/audio)
 [![GitHub release](https://img.shields.io/github/v/tag/qiniu/audio.svg?label=release)](https://github.com/qiniu/audio/releases)
 [![Coverage Status](https://codecov.io/gh/qiniu/audio/branch/master/graph/badge.svg)](https://codecov.io/gh/qiniu/audio)
