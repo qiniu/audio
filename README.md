@@ -39,7 +39,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/hajimehoshi/oto"
+	"github.com/hajimehoshi/oto/v2"
 
 	"github.com/qiniu/audio"
 	_ "github.com/qiniu/audio/mp3"

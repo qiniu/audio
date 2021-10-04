@@ -3,12 +3,7 @@ module github.com/qiniu/audio
 go 1.14
 
 require (
-	github.com/hajimehoshi/go-mp3 v0.2.1
-	github.com/hajimehoshi/oto v0.5.4
+	github.com/hajimehoshi/go-mp3 v0.3.2
+	github.com/hajimehoshi/oto/v2 v2.0.0
 	github.com/qiniu/x v1.10.5
-)
-
-replace (
-	github.com/hajimehoshi/oto v0.3.4 => github.com/qiniu/oto v0.5.4-fixed
-	github.com/hajimehoshi/oto v0.5.4 => github.com/qiniu/oto v0.5.4-fixed
 )
