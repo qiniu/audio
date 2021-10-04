@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
-	"time"
 
-	"github.com/hajimehoshi/oto/v2"
+	"github.com/hajimehoshi/oto"
 
 	"github.com/qiniu/audio"
 	_ "github.com/qiniu/audio/mp3"
@@ -31,18 +31,17 @@ func play(file string) error {
 		"Format: %s\nSampleRate: %d\nChannels: %d\nBytesPerSample: %d\n",
 		format, d.SampleRate(), d.Channels(), d.BytesPerSample())
 
-	c, ready, err := oto.NewContext(d.SampleRate(), d.Channels(), d.BytesPerSample())
+	c, err := oto.NewContext(d.SampleRate(), d.Channels(), d.BytesPerSample(), 8192)
 	if err != nil {
 		return err
 	}
-	<-ready
+	defer c.Close()
 
 	fmt.Printf("Length: %d[bytes]\n", d.Length())
-	p := c.NewPlayer(d)
-	p.Play()
-	for p.IsPlaying() {
-		time.Sleep(time.Second / 10)
-	}
+	p := c.NewPlayer()
+	defer p.Close()
+
+	_, err = io.Copy(p, d)
 	return err
 }
 

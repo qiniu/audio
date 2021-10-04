@@ -42,6 +42,7 @@ func DecodeConfig(r io.ReadSeeker) (cfg audio.Config, err error) {
 
 func init() {
 	audio.RegisterFormat("mp3", "ID3", Decode, DecodeConfig)
+	audio.RegisterFormat("mp3", "\xff\xfb", Decode, DecodeConfig)
 }
 
 // -------------------------------------------------------------------------------------
