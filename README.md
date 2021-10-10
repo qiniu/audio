@@ -5,7 +5,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/qiniu/audio)](https://goreportcard.com/report/github.com/qiniu/audio)
 [![GitHub release](https://img.shields.io/github/v/tag/qiniu/audio.svg?label=release)](https://github.com/qiniu/audio/releases)
 [![Coverage Status](https://codecov.io/gh/qiniu/audio/branch/master/graph/badge.svg)](https://codecov.io/gh/qiniu/audio)
-[![GoDoc](https://img.shields.io/badge/Godoc-reference-blue.svg)](https://godoc.org/github.com/qiniu/audio)
+[![GoDoc](https://pkg.go.dev/badge/github.com/qiniu/audio.svg)](https://pkg.go.dev/mod/github.com/qiniu/audio)
 
 [![Qiniu Logo](http://open.qiniudn.com/logo.png)](http://www.qiniu.com/)
 
@@ -39,7 +39,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/hajimehoshi/oto/v2"
+	"github.com/hajimehoshi/oto"
 
 	"github.com/qiniu/audio"
 	_ "github.com/qiniu/audio/mp3"
