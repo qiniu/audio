@@ -31,6 +31,9 @@ func (p *decoded) BytesPerSample() int {
 func Decode(r io.ReadSeeker) (audio.Decoded, error) {
 	b := bufiox.NewReader(r)
 	dec, err := mp3.NewDecoder(b)
+	if err != nil {
+		return nil, err
+	}
 	return &decoded{Decoder: *dec}, err
 }
 
